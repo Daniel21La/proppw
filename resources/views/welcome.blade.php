@@ -361,7 +361,7 @@
                 <h1>Selamat Datang di SiRent</h1>
                 <p>Solusi rental mobil terpercaya dengan layanan profesional. Nikmati perjalanan Anda dengan kenyamanan dan keamanan terjamin bersama armada terbaik kami.</p>
                 <div class="hero-buttons">
-                    <a href="#" class="btn btn-primary btn-hero">Mulai Sewa</a>
+                    <a href="{{ route('login') }}" class="btn btn-primary btn-hero">Mulai Sewa</a>
                     <a href="#about" class="btn btn-outline-light btn-hero">Pelajari Lebih</a>
                 </div>
             </div>
