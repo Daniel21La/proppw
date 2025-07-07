@@ -5,12 +5,12 @@
     <title>Rental Mobil</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{-- Bootstrap CSS --}}
+   
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    {{-- Bootstrap Icons --}}
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    {{-- Optional: Bootstrap JS Bundle --}}
+   
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
 
     <style>
@@ -36,7 +36,7 @@
             overflow-x: hidden;
         }
 
-        /* Animated background elements */
+        
         body::before {
             content: '';
             position: fixed;
@@ -51,7 +51,7 @@
             z-index: -2;
         }
 
-        /* Floating particles */
+       
         .floating-shapes {
             position: fixed;
             top: 0;
@@ -105,7 +105,7 @@
             75% { transform: translateY(-10px) rotate(270deg); }
         }
 
-        /* Modern Navbar */
+       
         .navbar-custom {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
@@ -202,7 +202,7 @@
             border-color: #fff;
         }
 
-        /* Modern Dropdown */
+        
         .nav-item.dropdown {
             position: relative;
             z-index: 1040;
@@ -239,7 +239,7 @@
             border-color: rgba(0, 0, 0, 0.1);
         }
 
-        /* Modern Content Container */
+        
         .content-container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
@@ -267,7 +267,7 @@
             z-index: -1;
         }
 
-        /* Modern Buttons */
+        
         .btn-primary {
             background: var(--primary-gradient);
             border: none;
@@ -336,7 +336,7 @@
             box-shadow: 0 8px 25px rgba(245, 87, 108, 0.6);
         }
 
-        /* Modern Toggle Button */
+        
         .navbar-toggler {
             border: 1px solid rgba(255, 255, 255, 0.3);
             background: rgba(255, 255, 255, 0.1);
@@ -354,7 +354,7 @@
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
 
-        /* Responsive Design */
+        
         @media (max-width: 768px) {
             .content-container {
                 padding: 1.5rem;
@@ -377,7 +377,7 @@
             }
         }
 
-        /* Scroll Styling */
+        
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -397,13 +397,13 @@
             background: rgba(255, 255, 255, 0.5);
         }
 
-        /* Additional hover effects */
+        
         .container {
             position: relative;
             z-index: 2;
         }
 
-        /* Login button special styling */
+        
         .nav-link.login-btn {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -415,7 +415,7 @@
             border-color: rgba(255, 255, 255, 0.5);
         }
 
-        /* User role styling */
+       
         .user-role {
             background: rgba(102, 126, 234, 0.1);
             border-radius: 20px;
@@ -509,9 +509,9 @@
     @yield('scripts')
 
     <script>
-        // Enhanced interactions
+       
         document.addEventListener('DOMContentLoaded', function() {
-            // Smooth scrolling for navigation links
+           
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
@@ -524,7 +524,7 @@
                 });
             });
 
-            // Enhanced dropdown interactions
+            
             const dropdownToggle = document.querySelector('.dropdown-toggle');
             if (dropdownToggle) {
                 dropdownToggle.addEventListener('show.bs.dropdown', function() {
@@ -536,7 +536,7 @@
                 });
             }
 
-            // Add parallax effect to floating shapes
+            
             document.addEventListener('mousemove', function(e) {
                 const shapes = document.querySelectorAll('.shape');
                 const mouseX = e.clientX / window.innerWidth;

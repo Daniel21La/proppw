@@ -3,13 +3,13 @@
 @section('content')
 <div class="min-vh-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
     <div class="container py-5">
-        <!-- Header Section -->
+       
         <div class="text-center mb-5">
             <h1 class="text-white mb-3 fw-bold">Daftar Mobil Rental</h1>
             <p class="text-white-50 fs-5">Temukan mobil impian Anda dengan mudah</p>
         </div>
 
-        <!-- Cars Grid -->
+        
         <div class="row g-4">
             @foreach($mobils as $mobil)
                 <div class="col-lg-4 col-md-6">
@@ -18,7 +18,7 @@
                          onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.2)'"
                          onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
                         
-                        <!-- Status Badge -->
+                        
                         <div class="position-absolute top-0 start-0 m-3 z-3">
                             @if($mobil->status === 'tersedia')
                                 <span class="badge bg-success px-3 py-2 rounded-pill shadow-sm">
@@ -31,7 +31,7 @@
                             @endif
                         </div>
 
-                        <!-- Car Image -->
+                       
                         <div class="position-relative overflow-hidden" style="height: 280px;">
                             <img src="{{ asset('gambar_mobil/' . $mobil->gambar) }}" 
                                  class="w-100 h-100" 
@@ -40,14 +40,14 @@
                                  onmouseover="this.style.transform='scale(1.05)'"
                                  onmouseout="this.style.transform='scale(1)'">
                             
-                            <!-- Gradient Overlay -->
+                            
                             <div class="position-absolute bottom-0 start-0 w-100 h-50" 
                                  style="background: linear-gradient(transparent, rgba(0,0,0,0.7));"></div>
                         </div>
 
-                        <!-- Card Body -->
+                        
                         <div class="card-body p-4">
-                            <!-- Car Brand and Model -->
+                            
                             <div class="d-flex align-items-center mb-3">
                                 <div class="bg-primary rounded-circle p-2 me-3">
                                     <i class="fas fa-car text-white"></i>
@@ -58,12 +58,12 @@
                                 </div>
                             </div>
 
-                            <!-- Description -->
+                            
                             <p class="text-muted mb-3 lh-base">
                                 {{ Str::limit($mobil->deskripsi, 100) }}
                             </p>
 
-                            <!-- Features -->
+                           
                             <div class="row mb-3">
                                 <div class="col-6">
                                     <div class="d-flex align-items-center text-muted small">
@@ -79,7 +79,7 @@
                                 </div>
                             </div>
 
-                            <!-- Price -->
+                            
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
                                     <span class="text-muted small">Harga per hari</span>
@@ -99,7 +99,7 @@
                                 </div>
                             </div>
 
-                            <!-- Action Button -->
+                           
                             @if($mobil->status === 'tersedia')
                                 <form action="{{ route('Transaksi.store') }}" method="POST">
                                     @csrf
@@ -121,7 +121,7 @@
             @endforeach
         </div>
 
-        <!-- Empty State -->
+        
         @if($mobils->isEmpty())
             <div class="text-center py-5">
                 <div class="bg-white rounded-4 shadow-sm p-5 mx-auto" style="max-width: 500px;">
@@ -134,7 +134,7 @@
     </div>
 </div>
 
-<!-- Custom Styles -->
+
 <style>
     .card:hover {
         transform: translateY(-5px) !important;

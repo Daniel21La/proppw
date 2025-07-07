@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="min-vh-100 position-relative" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <!-- Animated Background Elements -->
+   
     <div class="position-absolute w-100 h-100 overflow-hidden">
         <div class="floating-shape" style="position: absolute; top: 15%; left: 10%; width: 100px; height: 100px; background: rgba(255,255,255,0.08); border-radius: 50%; animation: float 8s ease-in-out infinite;"></div>
         <div class="floating-shape" style="position: absolute; top: 70%; right: 15%; width: 150px; height: 150px; background: rgba(255,255,255,0.05); border-radius: 50%; animation: float 10s ease-in-out infinite reverse;"></div>
@@ -11,7 +11,7 @@
     </div>
 
     <div class="container-fluid px-4 py-5 position-relative z-1">
-        <!-- Header Section -->
+       
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
@@ -48,7 +48,7 @@
             </div>
         </div>
 
-        <!-- Alert Section -->
+        
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show shadow-lg border-0 rounded-4 mb-4" role="alert" style="background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);">
                 <i class="fas fa-check-circle me-2"></i>
@@ -57,7 +57,7 @@
             </div>
         @endif
 
-        <!-- Statistics Cards -->
+        
         <div class="row mb-4 g-4">
             <div class="col-xl-3 col-md-6">
                 <div class="card border-0 shadow-lg h-100 overflow-hidden position-relative rounded-4" 
@@ -148,7 +148,7 @@
             </div>
         </div>
 
-        <!-- Main Table Card -->
+        
         <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
             <div class="card-header border-0 bg-transparent p-4">
                 <div class="d-flex justify-content-between align-items-center">
@@ -320,7 +320,7 @@
     </div>
 </div>
 
-<!-- Custom Styles -->
+
 <style>
     @keyframes float {
         0% { transform: translateY(0px); }
@@ -433,22 +433,22 @@
 </style>
 
 <script>
-    // Modern JavaScript functionality
+    
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize tooltips
+        
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
 
-        // Add staggered fade-in animation to table rows
+        
         const tableRows = document.querySelectorAll('tbody tr');
         tableRows.forEach((row, index) => {
             row.style.animationDelay = `${index * 0.1}s`;
             row.classList.add('fade-in');
         });
 
-        // Add hover effects to cards
+        
         const cards = document.querySelectorAll('.card');
         cards.forEach(card => {
             card.addEventListener('mouseenter', function() {
@@ -463,7 +463,7 @@
         });
     });
 
-    // Filter functionality
+    
     function filterByStatus(status) {
         const rows = document.querySelectorAll('#transactionTable tbody tr');
         
@@ -477,9 +477,9 @@
         });
     }
 
-    // Refresh table with animation
+    
     function refreshTable() {
-        // Add loading animation
+       
         const tableBody = document.querySelector('#transactionTable tbody');
         tableBody.style.opacity = '0.5';
         
@@ -488,9 +488,9 @@
         }, 500);
     }
 
-    // Export data functionality
+   
     function exportData() {
-        // Create export animation
+        
         const exportBtn = event.target;
         const originalText = exportBtn.innerHTML;
         
@@ -504,16 +504,16 @@
         }, 2000);
     }
 
-    // Real-time updates simulation
+    
     setInterval(function() {
-        // Add a subtle pulse animation to pending transactions
+        
         const pendingBadges = document.querySelectorAll('.badge.bg-warning');
         pendingBadges.forEach(badge => {
             badge.style.animation = 'pulse 2s infinite';
         });
     }, 5000);
 
-    // Add pulse animation keyframes
+    
     const style = document.createElement('style');
     style.textContent = `
         @keyframes pulse {

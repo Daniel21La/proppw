@@ -427,7 +427,7 @@
         box-shadow: 0 4px 15px rgba(156, 163, 175, 0.3);
     }
 
-    /* Alert Styles */
+   
     .alert {
         border-radius: 20px;
         padding: 1.5rem 2rem;
@@ -452,7 +452,7 @@
         color: #fff;
     }
 
-    /* Loading States */
+   
     .loading {
         position: relative;
         pointer-events: none;
@@ -477,7 +477,7 @@
         100% { transform: rotate(360deg); }
     }
 
-    /* Responsive Design */
+   
     @media (max-width: 768px) {
         .hero-title {
             font-size: 2.5rem;
@@ -527,13 +527,13 @@
 </style>
 
 <div class="container-fluid px-4">
-    <!-- Hero Section -->
+   
     <div class="hero-section">
         <h1 class="hero-title">🚗 Premium Car Rental</h1>
         <p class="hero-subtitle">Pilih kendaraan impian Anda untuk petualangan yang tak terlupakan</p>
     </div>
 
-    <!-- Success/Error Messages -->
+    
     @if(session('success'))
         <div class="alert alert-success">
             <i class="bi bi-check-circle-fill"></i>
@@ -552,7 +552,7 @@
         </div>
     @endif
 
-    <!-- Car Grid -->
+    
     <div class="car-grid">
         @forelse($mobils as $mobil)
             <div class="car-card">
@@ -601,7 +601,7 @@
         @endforelse
     </div>
 
-    <!-- Booking Form -->
+    
     <div class="form-section" id="formContainer" style="display: none;">
         <div class="form-header">
             <h3>
@@ -665,7 +665,7 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Elements
+        
         const selectButtons = document.querySelectorAll('.select-mobil');
         const formContainer = document.getElementById('formContainer');
         const mobilIdInput = document.getElementById('selectedMobilId');
@@ -681,32 +681,32 @@
         let selectedPrice = 0;
         let isCalculating = false;
 
-        // Car selection
+        
         selectButtons.forEach(button => {
             button.addEventListener('click', function () {
                 const mobilId = this.dataset.id;
                 const carName = this.dataset.name;
                 const price = parseInt(this.dataset.price);
                 
-                // Update selected car info
+                
                 selectedPrice = price;
                 mobilIdInput.value = mobilId;
                 selectedCarName.textContent = carName;
                 
-                // Add loading state
+                
                 this.classList.add('loading');
                 this.innerHTML = '<i class="bi bi-hourglass-split"></i> Memuat...';
                 
-                // Show form after delay
+                
                 setTimeout(() => {
                     formContainer.style.display = 'block';
                     formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     
-                    // Reset button
+                    
                     this.classList.remove('loading');
                     this.innerHTML = '<i class="bi bi-car-front-fill"></i> Sewa Mobil Ini';
                     
-                    // Reset form
+                    
                     form.reset();
                     totalSection.style.display = 'none';
                     mobilIdInput.value = mobilId;
@@ -714,7 +714,7 @@
             });
         });
 
-        // Date change handlers
+        
         tanggalMulai.addEventListener('change', function() {
             tanggalSelesai.min = this.value;
             if (tanggalSelesai.value && tanggalSelesai.value < this.value) {
@@ -725,7 +725,7 @@
 
         tanggalSelesai.addEventListener('change', calculateTotal);
 
-        // Calculate total cost
+       
         function calculateTotal() {
             if (isCalculating) return;
             
@@ -739,7 +739,7 @@
                 const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) + 1;
                 const total = selectedPrice * days;
                 
-                // Animate total display
+               
                 totalAmount.style.transform = 'scale(0.8)';
                 totalDuration.style.transform = 'scale(0.8)';
                 
@@ -759,7 +759,7 @@
             }
         }
 
-        // Form submission
+       
         form.addEventListener('submit', function(e) {
             if (!tanggalMulai.value || !tanggalSelesai.value || !selectedPrice) {
                 e.preventDefault();
@@ -767,13 +767,13 @@
                 return;
             }
             
-            // Show loading state
+            
             submitBtn.classList.add('loading');
             submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Memproses...';
             submitBtn.disabled = true;
         });
 
-        // Enhanced card animations
+        
         document.querySelectorAll('.car-card').forEach(card => {
             card.addEventListener('mouseenter', function() {
                 this.style.transform = 'translateY(-15px) scale(1.02)';
@@ -784,7 +784,7 @@
             });
         });
 
-        // Smooth scrolling for better UX
+        
         function smoothScroll(target) {
             target.scrollIntoView({
                 behavior: 'smooth',

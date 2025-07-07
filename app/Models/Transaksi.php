@@ -33,5 +33,5 @@ class Transaksi extends Model
     public function mobil()
     {
         return $this->belongsTo(RentalMobil::class, 'mobil_id', 'id');
-}
+    }
 }

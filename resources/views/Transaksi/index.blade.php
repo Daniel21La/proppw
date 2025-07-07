@@ -36,7 +36,7 @@
         to { transform: scaleX(1); }
     }
 
-    /* Modern Alert */
+   
     .alert {
         background: rgba(255, 255, 255, 0.15);
         backdrop-filter: blur(20px);
@@ -62,7 +62,7 @@
         border-radius: 2px;
     }
 
-    /* Statistics Cards */
+    
     .stats-row {
         margin-bottom: 2rem;
     }
@@ -112,7 +112,7 @@
         font-size: 0.9rem;
     }
 
-    /* Modern Table Container */
+   
     .table-container {
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(20px);
@@ -137,27 +137,26 @@
         z-index: -1;
     }
 
-    /* Modern Table */
-/* Fixed Table Alignment */
+   
 .table {
     background: transparent;
     color: #fff;
     margin-bottom: 0;
     border-collapse: separate;
     border-spacing: 0;
-    table-layout: fixed; /* Tambahkan ini untuk fixed width */
+    table-layout: fixed;
     width: 100%;
 }
 
 .table th,
 .table td {
-    vertical-align: middle; /* Pastikan semua konten center secara vertikal */
-    text-align: left; /* Konsisten text alignment */
-    padding: 1.5rem 1rem; /* Padding yang sama */
-    word-wrap: break-word; /* Untuk text yang panjang */
+    vertical-align: middle; 
+    text-align: left; 
+    padding: 1.5rem 1rem; 
+    word-wrap: break-word; 
 }
 
-/* Specific column widths untuk alignment yang perfect */
+
 .table th:nth-child(1),
 .table td:nth-child(1) {
     width: 8%; /* No */
@@ -171,23 +170,23 @@
 
 .table th:nth-child(3),
 .table td:nth-child(3) {
-    width: 18%; /* Tanggal Sewa */
+    width: 18%;
 }
 
 .table th:nth-child(4),
 .table td:nth-child(4) {
-    width: 18%; /* Tanggal Kembali */
+    width: 18%; 
 }
 
 .table th:nth-child(5),
 .table td:nth-child(5) {
-    width: 18%; /* Total Harga */
+    width: 18%; 
     text-align: right;
 }
 
 .table th:nth-child(6),
 .table td:nth-child(6) {
-    width: 13%; /* Status */
+    width: 13%; 
     text-align: center;
 }
 
@@ -202,8 +201,7 @@
     color: #fff;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     position: relative;
-    white-space: nowrap; /* Prevent text wrapping in header */
-}
+    white-space: nowrap; 
 
 .table th::after {
     content: '';
@@ -226,7 +224,7 @@
     position: relative;
 }
 
-/* Icon styling untuk konsistensi */
+
 .table th i,
 .table td i {
     width: 16px; /* Fixed width untuk semua icon */
@@ -234,7 +232,7 @@
     margin-right: 8px;
 }
 
-/* Car icon specific styling */
+
 .car-icon {
     font-size: 1.2rem;
     color: #4facfe;
@@ -243,7 +241,7 @@
     text-align: center;
 }
 
-/* Responsive adjustments */
+
 @media (max-width: 768px) {
     .table th,
     .table td {
@@ -251,7 +249,7 @@
         font-size: 0.85rem;
     }
     
-    /* Adjust column widths for mobile */
+    
     .table th:nth-child(1),
     .table td:nth-child(1) {
         width: 10%;
@@ -283,25 +281,23 @@
     }
 }
 
-/* Remove table-responsive if it causes issues */
-.table-responsive {
-    overflow-x: visible; /* Change from auto to visible */
-}
 
-/* Alternative: If you want to keep table-responsive */
+.table-responsive {
+    overflow-x: visible; 
+
+
 .table-responsive .table {
-    min-width: 800px; /* Minimum width to prevent cramping */
+    min-width: 800px; 
 }
     
 </style>
 
 <div class="container mt-4">
-    <!-- Page Title -->
-    <h1 class="page-title">
+   
         <i class="bi bi-receipt me-3"></i>Transaksi Saya
     </h1>
 
-    <!-- Success Alert -->
+    
     @if(session('success'))
         <div class="alert alert-success">
             <i class="bi bi-check-circle me-2"></i>
@@ -309,7 +305,7 @@
         </div>
     @endif
 
-    <!-- Statistics Cards -->
+    
     <div class="row stats-row">
         <div class="col-md-3">
             <div class="stats-card">
@@ -337,7 +333,7 @@
         </div>
     </div>
 
-    <!-- Modern Table -->
+    
     <div class="table-container">
         <div class="table-responsive">
             <table class="table align-middle">

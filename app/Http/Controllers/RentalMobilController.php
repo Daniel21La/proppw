@@ -11,14 +11,12 @@ class RentalMobilController extends Controller
     /**
      * Display a listing of the resource.
      */
-     // Untuk daftar mobil
 public function index()
 {
     $mobils = RentalMobil::all(); 
     return view('admin.rentalmobil.index', compact('mobils'));
 }
 
-// Untuk daftar transaksi
 public function adminIndex()
 {
     $transaksis = Transaksi::with('mobil', 'user')->get();

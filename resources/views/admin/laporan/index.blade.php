@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="min-vh-100 position-relative" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <!-- Animated Background Elements -->
+
     <div class="position-absolute w-100 h-100 overflow-hidden">
         <div class="floating-shape" style="position: absolute; top: 10%; left: 15%; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: float 6s ease-in-out infinite;"></div>
         <div class="floating-shape" style="position: absolute; top: 60%; right: 20%; width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%; animation: float 8s ease-in-out infinite reverse;"></div>
@@ -10,7 +10,7 @@
     </div>
 
     <div class="container py-5 position-relative z-1">
-        <!-- Header Section -->
+       
         <div class="text-center mb-5">
             <h1 class="text-white mb-3 fw-bold display-4">Dashboard Analytics</h1>
             <p class="text-white-50 fs-5">Sistem Rental Mobil - Laporan Komprehensif</p>
@@ -20,9 +20,9 @@
             </div>
         </div>
 
-        <!-- Statistics Cards -->
+        
         <div class="row g-4 mb-5">
-            <!-- Total Pemasukan -->
+            
             <div class="col-md-4">
                 <div class="card border-0 shadow-lg h-100 overflow-hidden position-relative" 
                      style="background: linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%); transform: translateY(0); transition: all 0.3s ease;"
@@ -47,7 +47,7 @@
                 </div>
             </div>
 
-            <!-- Mobil Tersedia -->
+            
             <div class="col-md-4">
                 <div class="card border-0 shadow-lg h-100 overflow-hidden position-relative" 
                      style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transform: translateY(0); transition: all 0.3s ease;"
@@ -72,7 +72,7 @@
                 </div>
             </div>
 
-            <!-- Mobil Disewa -->
+            
             <div class="col-md-4">
                 <div class="card border-0 shadow-lg h-100 overflow-hidden position-relative" 
                      style="background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%); transform: translateY(0); transition: all 0.3s ease;"
@@ -98,7 +98,7 @@
             </div>
         </div>
 
-        <!-- Transaction History Section -->
+        
         <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
             <div class="card-header border-0 bg-transparent p-4">
                 <div class="d-flex justify-content-between align-items-center">
@@ -202,7 +202,7 @@
     </div>
 </div>
 
-<!-- Custom Styles -->
+
 <style>
     @keyframes float {
         0% { transform: translateY(0px); }

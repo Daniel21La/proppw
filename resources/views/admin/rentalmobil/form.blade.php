@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
 @section('content')
-<!-- Modern Background -->
+
 <div class="modern-bg">
     <div class="container-fluid px-4 py-5">
         <div class="row justify-content-center">
             <div class="col-lg-10 col-xl-8">
-                <!-- Header Section -->
+                
                 <div class="header-card mb-5">
                     <div class="d-flex align-items-center">
                         <div>
@@ -16,7 +16,7 @@
                     </div>
                 </div>
 
-                <!-- Error Alert -->
+                
                 @if ($errors->any())
                     <div class="modern-alert mb-4" role="alert">
                         <div class="alert-icon">
@@ -33,7 +33,7 @@
                     </div>
                 @endif
 
-                <!-- Main Form Card -->
+                
                 <div class="modern-card">
                     <div class="card-body">
                         <form action="{{ route('admin.rentalmobil.save', $mobil->id ?? '') }}" method="POST" enctype="multipart/form-data">
@@ -51,12 +51,12 @@
                                                id="merk"
                                                class="modern-input" 
                                                value="{{ old('merk', $mobil->merk ?? '') }}" 
-                                               placeholder="Contoh: Toyota, Honda, BMW"
+                                               placeholder="Masukkan Merek Mobil"
                                                required>
                                     </div>
                                 </div>
 
-                                <!-- Nama Mobil -->
+                                
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="nama_mobil" class="form-label">
@@ -67,12 +67,12 @@
                                                id="nama_mobil"
                                                class="modern-input" 
                                                value="{{ old('nama_mobil', $mobil->nama_mobil ?? '') }}" 
-                                               placeholder="Contoh: Avanza, Civic, X5"
+                                               placeholder="Masukkan Nama Mobil"
                                                required>
                                     </div>
                                 </div>
 
-                                <!-- Harga per Hari -->
+                                
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="harga_per_hari" class="form-label">
@@ -91,7 +91,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Status -->
+                                
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="status" class="form-label">
@@ -108,7 +108,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Gambar Mobil -->
+                                
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label for="gambar" class="form-label">
@@ -160,7 +160,7 @@
                                 </div>
                             </div>
 
-                            <!-- Action Buttons -->
+                            
                             <div class="action-buttons">
                                 <a href="{{ route('admin.rentalmobil.index') }}" class="btn-secondary">
                                     <i class="fas fa-arrow-left me-2"></i>Kembali
@@ -177,7 +177,7 @@
     </div>
 </div>
 
-<!-- Modern CSS -->
+
 <style>
 :root {
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -694,13 +694,13 @@ body {
 }
 </style>
 
-<!-- Enhanced JavaScript -->
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const imageInput = document.getElementById('gambar');
     const uploadArea = document.getElementById('uploadArea');
     
-    // Drag and drop functionality
+    
     uploadArea.addEventListener('dragover', function(e) {
         e.preventDefault();
         uploadArea.classList.add('dragover');
@@ -722,7 +722,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // File input change handler
+    
     if (imageInput) {
         imageInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -732,7 +732,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Image preview function
+    
     function handleImagePreview(file) {
         // Validate file type
         if (!file.type.startsWith('image/')) {
@@ -740,7 +740,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Validate file size (5MB)
+        
         if (file.size > 5 * 1024 * 1024) {
             alert('File size must be less than 5MB.');
             return;
@@ -748,13 +748,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const reader = new FileReader();
         reader.onload = function(e) {
-            // Remove existing preview
+            
             const existingPreview = document.querySelector('.image-preview');
             if (existingPreview) {
                 existingPreview.remove();
             }
             
-            // Create new preview
+            
             const preview = document.createElement('div');
             preview.className = 'image-preview';
             preview.innerHTML = `
@@ -771,11 +771,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             
-            // Insert preview before upload area
+            
             const uploadContainer = document.querySelector('.upload-container');
             uploadContainer.insertBefore(preview, uploadContainer.firstChild);
             
-            // Add animation
+           
             setTimeout(() => {
                 preview.style.opacity = '1';
                 preview.style.transform = 'translateY(0)';
@@ -784,7 +784,7 @@ document.addEventListener('DOMContentLoaded', function() {
         reader.readAsDataURL(file);
     }
     
-    // Form submission loading state
+    
     const form = document.querySelector('form');
     if (form) {
         form.addEventListener('submit', function() {
@@ -796,7 +796,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Auto-format currency input
+    
     const priceInput = document.getElementById('harga_per_hari');
     if (priceInput) {
         priceInput.addEventListener('input', function(e) {
@@ -805,7 +805,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Smooth scroll for error alerts
+    
     const alertElement = document.querySelector('.modern-alert');
     if (alertElement) {
         alertElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
