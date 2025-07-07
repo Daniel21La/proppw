@@ -11,17 +11,19 @@ class RentalMobilController extends Controller
     /**
      * Display a listing of the resource.
      */
-      public function adminindex()
-    {
-        $transaksis = Transaksi::with('mobil', 'user')->get();
-        return view('admin.transaksi.index', compact('transaksis'));
-    }
-    public function index()
-    {
-        $mobils = RentalMobil::all();
-        return view('admin.rentalmobil.index', compact('mobils'));
-    }
+     // Untuk daftar mobil
+public function index()
+{
+    $mobils = RentalMobil::all(); 
+    return view('admin.rentalmobil.index', compact('mobils'));
+}
 
+// Untuk daftar transaksi
+public function adminIndex()
+{
+    $transaksis = Transaksi::with('mobil', 'user')->get();
+    return view('admin.transaksi.index', compact('transaksis'));
+}
     /**
      * Show the form for creating a new resource.
      */
@@ -62,11 +64,9 @@ public function setujuiTransaksi($id)
 {
     $transaksi = Transaksi::findOrFail($id);
 
-    // Update status transaksi
     $transaksi->status = 'disetujui';
     $transaksi->save();
 
-    // Ubah status mobil menjadi tidak tersedia
     $mobil = $transaksi->mobil;
     if ($mobil) {
         $mobil->status = 'disewa';

@@ -11,20 +11,15 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    if (Auth::check() && Auth::user()->role === 'admin') {
-        return redirect()->route('admin.transaksi.index');
+    if (Auth::check()) {
+        if (Auth::user()->role === 'admin') {
+            return redirect()->route('admin.transaksi.index');
+        } elseif (Auth::user()->role === 'user') {
+            return redirect()->route('Transaksi.create');
+        }
     }
-
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/dashboard', function () {
-    if (Auth::check() && Auth::user()->role === 'user') {
-        return redirect()->route('Transaksi.create');
-    }
-
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -45,6 +40,7 @@ Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->prefix('admin'
 Route::middleware(['auth', \App\Http\Middleware\IsUser::class])->group(function () {
     Route::get('/transaksi', [TransaksiController::class, 'index'])->name('Transaksi.index');
     Route::get('/transaksi/create', [TransaksiController::class, 'create'])->name('Transaksi.create');
+
 
     Route::post('/transaksi/store', [TransaksiController::class, 'store'])->name('Transaksi.store');
 });
