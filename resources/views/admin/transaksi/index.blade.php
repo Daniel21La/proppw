@@ -163,13 +163,6 @@
                         <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-3" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-ellipsis-v"></i>
                         </button>
-                        <div class="dropdown-menu shadow-lg border-0 rounded-3">
-                            <div class="dropdown-header">Aksi:</div>
-                            <a class="dropdown-item" href="#" onclick="exportData()">
-                                <i class="fas fa-download me-2"></i>Export Data
-                            </a>
-                        </div>
-                    </div>
                 </div>
             </div>
 
