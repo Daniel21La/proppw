@@ -15,7 +15,12 @@ class RentalMobil extends Model
     protected $fillable = [
         'merk',
         'nama_mobil',
+        'nopol',
+        'tipe_kendaraan',
+        'kapasitas_penumpang',
+        'transmisi',
         'harga_per_hari',
+        'biaya_sopir_per_hari',
         'gambar',
         'status',
     ];
@@ -25,10 +30,15 @@ class RentalMobil extends Model
         return $this->hasMany(Transaksi::class, 'mobil_id');
     }
 
+    public function seasonalPrices()
+    {
+        return $this->hasMany(SeasonalPrice::class, 'rental_mobil_id');
+    }
+
     public function getGambarUrlAttribute()
     {
         return $this->gambar
             ? asset('/gambar_mobil/' . $this->gambar)
-            : asset('/gambar_mobil/default.jpg');
+            : asset('/images/audi_front_dark.jpg');
     }
 }
