@@ -27,6 +27,8 @@ Route::get('/dashboard', function () {
     if (Auth::check()) {
         if (Auth::user()->role === 'admin') {
             return redirect()->route('admin.transaksi.index');
+        } elseif (Auth::user()->role === 'driver') {
+            return redirect()->route('driver.dashboard');
         } elseif (Auth::user()->role === 'user') {
             return redirect()->route('Transaksi.create');
         }
@@ -76,7 +78,24 @@ Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->prefix('admin'
     Route::post('/transaksi/{id}/toggle-dispute', [\App\Http\Controllers\DocumentController::class, 'toggleDispute'])->name('admin.transaksi.dispute');
 
     Route::get('/laporan', [RentalMobilController::class, 'laporan'])->name('admin.laporan.index');
+    Route::post('/transaksi/{id}/settle-fine', [\App\Http\Controllers\Admin\AdminInventoryController::class, 'settleFine'])->name('admin.transaksi.settle-fine');
 });
+
+// Point 5E: Public Terms and Conditions
+Route::get('/terms', function () {
+    return Inertia::render('Terms');
+})->name('terms');
+
+// Fase 1: Public Privacy Policy (UU PDP No. 27/2022)
+Route::get('/privacy-policy', function () {
+    return Inertia::render('PrivacyPolicy');
+})->name('privacy');
+
+// Point 5C: Google Maps Distance API Delivery Calculation Endpoint
+Route::post('/transaksi/calculate-delivery', [TransaksiController::class, 'calculateDeliveryCost'])->name('transaksi.calculate-delivery');
+
+// Fase 2: Timeline Availability Engine Endpoint
+Route::post('/transaksi/check-availability', [TransaksiController::class, 'checkAvailability'])->name('transaksi.check-availability');
 
 // Point 3: WhatsApp OTP Verification Endpoints
 Route::post('/otp/send', [\App\Http\Controllers\OtpController::class, 'send'])->name('otp.send');
@@ -87,13 +106,24 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/transaksi/create', [TransaksiController::class, 'create'])->name('Transaksi.create');
     Route::post('/transaksi/store', [TransaksiController::class, 'store'])->name('Transaksi.store');
     Route::get('/transaksi/{id}', [TransaksiController::class, 'show'])->name('Transaksi.show');
+    Route::get('/transaksi/{id}/invoice', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('transaksi.invoice');
     Route::post('/transaksi/{id}/cancel', [TransaksiController::class, 'cancel'])->name('Transaksi.cancel');
+
+    // Point 5B: Rental Extension (Extend) Endpoints
+    Route::post('/transaksi/{id}/check-extend', [TransaksiController::class, 'checkExtend'])->name('Transaksi.check-extend');
+    Route::post('/transaksi/{id}/apply-extend', [TransaksiController::class, 'applyExtend'])->name('Transaksi.apply-extend');
+
+    // Driver Portal & Vehicle Inspection Routes
+    Route::get('/driver/dashboard', [\App\Http\Controllers\Driver\DriverTaskController::class, 'index'])->name('driver.dashboard');
+    Route::post('/driver/inspection', [\App\Http\Controllers\Driver\DriverTaskController::class, 'storeInspection'])->name('driver.inspection.store');
 
     // Route aliases for lowercase compatibility
     Route::get('/user/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
     Route::get('/user/transaksi/create', [TransaksiController::class, 'create'])->name('transaksi.create');
     Route::post('/user/transaksi/store', [TransaksiController::class, 'store'])->name('transaksi.store');
     Route::get('/user/transaksi/{id}', [TransaksiController::class, 'show'])->name('transaksi.show');
+    Route::post('/user/transaksi/{id}/check-extend', [TransaksiController::class, 'checkExtend'])->name('transaksi.check-extend');
+    Route::post('/user/transaksi/{id}/apply-extend', [TransaksiController::class, 'applyExtend'])->name('transaksi.apply-extend');
 });
 
 require __DIR__ . '/auth.php';

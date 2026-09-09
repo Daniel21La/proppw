@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'google_maps' => [
+        'api_key' => env('GOOGLE_MAPS_API_KEY', ''),
+        'garage_address' => env('GARAGE_ADDRESS', 'Bandara Soekarno-Hatta Terminal 3, Tangerang, Banten'),
+        'rate_per_km' => env('DELIVERY_RATE_PER_KM', 4000),
+    ],
+
+    'fonnte' => [
+        'token' => env('FONNTE_TOKEN', ''),
+    ],
 ];

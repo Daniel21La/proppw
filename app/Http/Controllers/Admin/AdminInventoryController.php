@@ -206,6 +206,30 @@ class AdminInventoryController extends Controller
         if ($request->filled('catatan_admin')) {
             $transaksi->catatan_admin = $request->catatan_admin;
         }
+
+        // Point 5A: Auto-calculate late return fine when unit is returned ('selesai')
+        $lateNoticeMsg = null;
+        if ($newStatus === 'selesai') {
+            $actualReturn = now();
+            $transaksi->tanggal_kembali_aktual = $actualReturn;
+
+            $fineReport = $transaksi->hitungDendaKeterlambatan($actualReturn);
+            $transaksi->menit_terlambat = $fineReport['minutes_late'];
+            $transaksi->denda_keterlambatan = $fineReport['fine_amount'];
+            $transaksi->status_denda = $fineReport['fine_amount'] > 0 ? 'belum_dibayar' : 'none';
+
+            if ($fineReport['fine_amount'] > 0) {
+                $lateNoticeMsg = "Terdeteksi keterlambatan {$fineReport['minutes_late']} menit ({$fineReport['tier']}). Denda sistem otomatis: Rp " . number_format($fineReport['fine_amount'], 0, ',', '.');
+                
+                // Dispatch notification to customer
+                try {
+                    \App\Services\WhatsAppService::sendLateReturnNotice($transaksi, $fineReport['minutes_late'], $fineReport['fine_amount']);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::warning("Late return WA dispatch failed: " . $e->getMessage());
+                }
+            }
+        }
+
         $transaksi->save();
 
         // Update car physical status accordingly
@@ -223,14 +247,43 @@ class AdminInventoryController extends Controller
             }
         }
 
+        $auditDesc = "Mengubah status pesanan {$transaksi->nomor_booking} dari [{$oldStatus}] menjadi [{$newStatus}]. Unit {$mobil?->nama_mobil}.";
+        if ($lateNoticeMsg) {
+            $auditDesc .= " [{$lateNoticeMsg}]";
+        }
+
         AuditLog::record(
             'UBAH_STATUS_PESANAN',
-            "Mengubah status pesanan {$transaksi->nomor_booking} dari [{$oldStatus}] menjadi [{$newStatus}]. Unit {$mobil?->nama_mobil}.",
+            $auditDesc,
             'Transaksi',
             $transaksi->id
         );
 
-        return back()->with('success', "Status pesanan {$transaksi->nomor_booking} berhasil diubah menjadi {$newStatus}.");
+        $successMsg = "Status pesanan {$transaksi->nomor_booking} berhasil diubah menjadi {$newStatus}.";
+        if ($lateNoticeMsg) {
+            $successMsg .= " (" . $lateNoticeMsg . ")";
+        }
+
+        return back()->with('success', $successMsg);
+    }
+
+    /**
+     * Point 5A: Settle Late Return Fine
+     */
+    public function settleFine(Request $request, $id)
+    {
+        $transaksi = Transaksi::with('mobil')->findOrFail($id);
+        $transaksi->status_denda = 'lunas';
+        $transaksi->save();
+
+        AuditLog::record(
+            'LUNAS_DENDA_KETERLAMBATAN',
+            "Denda keterlambatan pesanan {$transaksi->nomor_booking} sebesar Rp " . number_format($transaksi->denda_keterlambatan, 0, ',', '.') . " telah diselesaikan/lunas.",
+            'Transaksi',
+            $transaksi->id
+        );
+
+        return back()->with('success', "Status denda keterlambatan pesanan {$transaksi->nomor_booking} berhasil ditandai LUNAS.");
     }
 
     /**

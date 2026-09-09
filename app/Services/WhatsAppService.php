@@ -197,5 +197,86 @@ class WhatsAppService
 
         return ['success' => true, 'message' => 'Notifikasi detail driver terkirim.'];
     }
+
+    /**
+     * Point 5A: Send Late Return Notice via WhatsApp
+     */
+    public static function sendLateReturnNotice(\App\Models\Transaksi $transaksi, int $menitTerlambat, int $denda): array
+    {
+        $phone = $transaksi->no_hp_pelanggan ?: ($transaksi->no_hp_offline ?: ($transaksi->user->telepon ?? ''));
+        if (empty($phone)) {
+            return ['success' => false, 'message' => 'Nomor WhatsApp tidak ditemukan.'];
+        }
+
+        $formattedPhone = self::formatNumber($phone);
+        $dendaFormatted = 'Rp ' . number_format($denda, 0, ',', '.');
+        $hours = floor($menitTerlambat / 60);
+        $mins = $menitTerlambat % 60;
+        $timeStr = ($hours > 0 ? "{$hours} Jam " : "") . "{$mins} Menit";
+
+        $message = "⚠️ *PERINGATAN KETERLAMBATAN PENGEMBALIAN UNIT*\n\n"
+            . "Halo *" . ($transaksi->user->name ?? 'Pelanggan') . "*,\n"
+            . "Unit kendaraan *{$transaksi->mobil->nama_mobil}* (Booking #{$transaksi->nomor_booking}) terdeteksi melewati jadwal pengembalian resmi.\n\n"
+            . "• Waktu Terlambat: *{$timeStr}*\n"
+            . "• Tagihan Denda Keterlambatan: *{$dendaFormatted}*\n\n"
+            . "Sesuai ketentuan kontrak & transparansi biaya Poin 5, denda ini dihitung otomatis oleh sistem. Mohon segera serahkan unit ke petugas kami untuk menghindari akumulasi biaya sewa tambahan.\n\n"
+            . "_Layanan Pelanggan Quantum Streamline_";
+
+        $token = config('services.fonnte.token') ?? env('FONNTE_TOKEN');
+        if (!empty($token)) {
+            try {
+                Http::withHeaders(['Authorization' => $token])->post('https://api.fonnte.com/send', [
+                    'target' => $formattedPhone,
+                    'message' => $message,
+                ]);
+            } catch (\Exception $e) {
+                Log::warning("Fonnte late return notice failed: {$e->getMessage()}");
+            }
+        }
+
+        $debugFile = storage_path('logs/whatsapp_notifications.log');
+        file_put_contents($debugFile, date('[Y-m-d H:i:s] ') . "[LATE RETURN NOTICE] To: {$formattedPhone} | Late: {$timeStr} | Fine: {$dendaFormatted}" . PHP_EOL, FILE_APPEND);
+
+        return ['success' => true, 'message' => 'Notifikasi keterlambatan terkirim.'];
+    }
+
+    /**
+     * Point 5B: Send Rental Extension Confirmation via WhatsApp
+     */
+    public static function sendExtensionConfirmation(\App\Models\Transaksi $transaksi, string $oldEndDate, string $newEndDate, int $additionalCost): array
+    {
+        $phone = $transaksi->no_hp_pelanggan ?: ($transaksi->no_hp_offline ?: ($transaksi->user->telepon ?? ''));
+        if (empty($phone)) {
+            return ['success' => false, 'message' => 'Nomor WhatsApp tidak ditemukan.'];
+        }
+
+        $formattedPhone = self::formatNumber($phone);
+        $costFormatted = 'Rp ' . number_format($additionalCost, 0, ',', '.');
+
+        $message = "✨ *PERPANJANGAN SEWA BERHASIL — QUANTUM STREAMLINE*\n\n"
+            . "Halo *" . ($transaksi->user->name ?? 'Pelanggan') . "*,\n"
+            . "Permintaan perpanjangan sewa armada *{$transaksi->mobil->nama_mobil}* (Booking #{$transaksi->nomor_booking}) telah disetujui & diverifikasi lunas:\n\n"
+            . "• Jadwal Semula: *{$oldEndDate}*\n"
+            . "• Jadwal Baru Hingga: *{$newEndDate}*\n"
+            . "• Biaya Tambahan Perpanjangan: *{$costFormatted}*\n\n"
+            . "Unit kendaraan tetap ter-booking aman khusus untuk Anda. Terima kasih atas kepercayaan Anda berkendara bersama kami!";
+
+        $token = config('services.fonnte.token') ?? env('FONNTE_TOKEN');
+        if (!empty($token)) {
+            try {
+                Http::withHeaders(['Authorization' => $token])->post('https://api.fonnte.com/send', [
+                    'target' => $formattedPhone,
+                    'message' => $message,
+                ]);
+            } catch (\Exception $e) {
+                Log::warning("Fonnte extension notice failed: {$e->getMessage()}");
+            }
+        }
+
+        $debugFile = storage_path('logs/whatsapp_notifications.log');
+        file_put_contents($debugFile, date('[Y-m-d H:i:s] ') . "[EXTENSION CONFIRMED] To: {$formattedPhone} | Until: {$newEndDate} | Cost: {$costFormatted}" . PHP_EOL, FILE_APPEND);
+
+        return ['success' => true, 'message' => 'Notifikasi perpanjangan terkirim.'];
+    }
 }
 

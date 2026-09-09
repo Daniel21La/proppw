@@ -54,4 +54,9 @@ class User extends Authenticatable
     {
         return $this->role === 'user';
     }
+
+    public function isDriver()
+    {
+        return $this->role === 'driver';
+    }
 }

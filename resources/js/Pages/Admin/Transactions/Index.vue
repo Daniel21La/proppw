@@ -154,6 +154,14 @@ function quickUpdate(trx, newStatus) {
     });
 }
 
+function settleFine(trx) {
+    if (confirm(`Tandai denda keterlambatan sebesar Rp ${new Intl.NumberFormat('id-ID').format(trx.denda_keterlambatan)} sebagai LUNAS?`)) {
+        router.post(`/admin/transaksi/${trx.id}/settle-fine`, {}, {
+            preserveScroll: true,
+        });
+    }
+}
+
 const stats = computed(() => {
     const total = props.transaksis.length;
     const baru = props.transaksis.filter((t) => t.status === 'baru' || t.status === 'pending').length;
@@ -609,9 +617,36 @@ function formatDate(d) {
                                 </div>
                             </td>
 
-                            <!-- Total -->
-                            <td class="py-4 px-6 font-black text-red-400 text-sm">
-                                {{ formatRupiah(t.total_harga) }}
+                            <!-- Total & Point 5 Fines -->
+                            <td class="py-4 px-6">
+                                <span class="font-black text-red-400 text-sm block">
+                                    {{ formatRupiah(t.total_harga) }}
+                                </span>
+                                <div v-if="t.extra_hours > 0" class="text-[10px] text-amber-400 font-semibold">
+                                    +{{ t.extra_hours }} Jam Add-on
+                                </div>
+                                <div v-if="t.biaya_pengantaran > 0" class="text-[10px] text-neutral-400">
+                                    Antar: {{ formatRupiah(t.biaya_pengantaran) }}
+                                </div>
+                                <!-- Point 5A: Denda Keterlambatan Badge & Settle Button -->
+                                <div v-if="t.denda_keterlambatan > 0" class="mt-1.5 p-1.5 rounded-lg bg-red-950/80 border border-red-800/80 text-[10px]">
+                                    <div class="font-bold text-red-300">
+                                        Denda: {{ formatRupiah(t.denda_keterlambatan) }}
+                                    </div>
+                                    <div class="flex items-center justify-between gap-1 text-[9px] mt-0.5">
+                                        <span :class="t.status_denda === 'lunas' ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'">
+                                            {{ t.status_denda === 'lunas' ? 'LUNAS' : 'BELUM BAYAR' }}
+                                        </span>
+                                        <button
+                                            v-if="t.status_denda === 'belum_dibayar'"
+                                            @click="settleFine(t)"
+                                            type="button"
+                                            class="text-emerald-400 hover:text-emerald-300 underline font-bold cursor-pointer"
+                                        >
+                                            Set Lunas
+                                        </button>
+                                    </div>
+                                </div>
                             </td>
 
                             <!-- Status -->
@@ -711,6 +746,17 @@ function formatDate(d) {
                         <p class="text-[10px] text-neutral-400 mt-1">
                             *Memilih 'Berjalan' otomatis mengubah status mobil jadi <b class="text-amber-400">Disewa</b>. Memilih 'Selesai' otomatis mengembalikan mobil ke <b class="text-emerald-400">Tersedia</b>.
                         </p>
+
+                        <!-- Point 5A: Late Return Auto-Calculation Notice -->
+                        <div v-if="statusForm.status === 'selesai'" class="mt-2.5 p-3 rounded-xl bg-amber-950/40 border border-amber-500/40 text-[11px] text-amber-300 space-y-1">
+                            <div class="flex items-center gap-1.5 font-bold">
+                                <Clock class="w-3.5 h-3.5" />
+                                <span>Kalkulasi Otomatis Denda Keterlambatan (Poin 5A)</span>
+                            </div>
+                            <p class="text-neutral-300 leading-relaxed text-[10px]">
+                                Sistem akan membandingkan waktu sekarang dengan jadwal kontrak unit. Grace period: <b>30 menit</b>. Jika lewat, denda Tier 1 (Rp 50rb/jam proporsional) atau Tier 2 (1 hari penuh) akan otomatis terbit dan notifikasi WA dikirim ke pelanggan.
+                            </p>
+                        </div>
                     </div>
 
                     <div>

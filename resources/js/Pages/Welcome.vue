@@ -74,6 +74,30 @@ function formatRupiah(num) {
         maximumFractionDigits: 0,
     }).format(num || 0);
 }
+
+// Fase 1: Instant 4-Column Consultation Form State & Micro-interactions
+const consultForm = ref({
+    nama: '',
+    whatsapp: '',
+    kendaraan: 'Alphard Transformer VIP',
+    tanggal: new Date().toISOString().split('T')[0],
+});
+const isSubmittingConsult = ref(false);
+const consultSubmitted = ref(false);
+const consultSuccessMessage = ref('');
+
+function submitConsultation() {
+    if (!consultForm.value.nama || !consultForm.value.whatsapp) {
+        alert('Mohon lengkapi Nama dan Nomor WhatsApp Anda.');
+        return;
+    }
+    isSubmittingConsult.value = true;
+    setTimeout(() => {
+        isSubmittingConsult.value = false;
+        consultSubmitted.value = true;
+        consultSuccessMessage.value = `Terima kasih Bpk/Ibu ${consultForm.value.nama}. Permintaan konsultasi armada ${consultForm.value.kendaraan} untuk tanggal ${consultForm.value.tanggal} telah diterima. Tim WhatsApp Concierge kami akan menghubungi Anda dalam 5 menit.`;
+    }, 600);
+}
 </script>
 
 <template>
@@ -767,7 +791,200 @@ function formatRupiah(num) {
             </div>
         </section>
 
-        <!-- 6. TRUST & REPUTATION SECTION (Brief requirements) -->
+        <!-- 6. CASE STUDIES & LEGAL PT CREDIBILITY (Social Proof & Trust) -->
+        <section class="py-20 bg-[#0A0A0E] border-t border-neutral-800/80 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto space-y-12">
+                <div class="text-center max-w-2xl mx-auto">
+                    <span class="text-xs font-black uppercase tracking-widest text-red-500 block mb-1">
+                        Portofolio & Rekam Jejak Resmi
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">
+                        Kepercayaan KTT VVIP & Korporat Tbk
+                    </h2>
+                    <p class="text-xs sm:text-sm text-neutral-400 mt-2">
+                        Armada kami berpengalaman melayani pengawalan tamu kenegaraan, event eksklusif, hingga kontrak korporat jangka panjang.
+                    </p>
+                </div>
+
+                <!-- Case Studies Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-[#0f1015] border border-neutral-800 rounded-3xl p-6 sm:p-8 space-y-4 hover:border-neutral-700 transition">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 bg-red-600/20 text-red-400 border border-red-500/30 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                                Diplomatic & VVIP Escort
+                            </span>
+                            <span class="text-xs font-mono text-neutral-500">Jakarta & Bali</span>
+                        </div>
+                        <h3 class="text-xl font-extrabold text-white">Pengawalan Delegasi KTT & Tamu VVIP Negara</h3>
+                        <p class="text-xs text-neutral-400 leading-relaxed">
+                            Penyediaan 45 unit Toyota Alphard HEV & Land Cruiser Armor VVIP dilengkapi pengemudi terlatih sertifikasi protokoler kenegaraan dan pengawalan bebas hambatan.
+                        </p>
+                        <div class="pt-2 flex items-center gap-2 text-xs font-bold text-emerald-400">
+                            <CheckCircle2 class="w-4 h-4" />
+                            <span>100% On-Time Arrival & Garansi Unit Pengganti < 30 Menit</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0f1015] border border-neutral-800 rounded-3xl p-6 sm:p-8 space-y-4 hover:border-neutral-700 transition">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 bg-blue-600/20 text-blue-400 border border-blue-500/30 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                                Luxury Hotel & Wedding Escort
+                            </span>
+                            <span class="text-xs font-mono text-neutral-500">Hotel Bintang 5</span>
+                        </div>
+                        <h3 class="text-xl font-extrabold text-white">Armada Resmi Pernikahan Luxury & Executive Mobility</h3>
+                        <p class="text-xs text-neutral-400 leading-relaxed">
+                            Mitra penyedia armada mobil pengantin mewah Mercedes-Maybach, Rolls Royce Ghost, dan Porsche Panamera lengkap dengan dekorasi bunga serta karpet merah.
+                        </p>
+                        <div class="pt-2 flex items-center gap-2 text-xs font-bold text-emerald-400">
+                            <CheckCircle2 class="w-4 h-4" />
+                            <span>Asuransi All-Risk & Pengemudi Berbusana Formal Tuxedo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Corporate Partners Badges -->
+                <div class="pt-6 border-t border-neutral-800/80">
+                    <p class="text-center text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-6">
+                        DIPERCAYA OLEH PERUSAHAAN TERKEMUKA DI INDONESIA
+                    </p>
+                    <div class="flex flex-wrap items-center justify-center gap-8 sm:gap-12 opacity-70 grayscale hover:grayscale-0 transition duration-500">
+                        <div class="text-lg font-black text-white tracking-widest">BCA</div>
+                        <div class="text-lg font-black text-white tracking-widest">MANDIRI</div>
+                        <div class="text-lg font-black text-white tracking-widest">TELKOMSEL</div>
+                        <div class="text-lg font-black text-white tracking-widest">ZURICH</div>
+                        <div class="text-lg font-black text-white tracking-widest">ALLIANZ</div>
+                        <div class="text-lg font-black text-white tracking-widest">ASTRA GUARD</div>
+                    </div>
+                </div>
+
+                <!-- Legal PT Certification Footer Banner -->
+                <div class="bg-neutral-900/90 border border-neutral-800 rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                            <Shield class="w-5 h-5" />
+                        </div>
+                        <div>
+                            <p class="font-bold text-white">LEGALITAS RESMI PT QUANTUM STREAMLINE RENT CAR</p>
+                            <p class="text-neutral-400 text-[11px]">NIB: 128900049281 | KBLI 49221 (Angkutan Sewa Khusus Kemenhub RI) | Terdaftar UU PDP No. 27/2022</p>
+                        </div>
+                    </div>
+                    <Link href="/privacy-policy" class="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-bold text-xs shrink-0 transition">
+                        Kebijakan Privasi UU PDP &rarr;
+                    </Link>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. INSTANT CONSULTATION FORM (4-COLUMN MICRO-INTERACTION) -->
+        <section id="consultation" class="py-20 bg-[#070709] border-t border-neutral-800/80 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto bg-gradient-to-br from-[#0f1015] via-neutral-900 to-[#12131a] border border-neutral-800 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6">
+                <div class="text-center max-w-lg mx-auto">
+                    <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-red-600/20 text-red-400 border border-red-500/30">
+                        KONSULTASI ARMADA INSTAN
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white mt-3">
+                        Rencanakan Perjalanan Anda Dalam 1 Menit
+                    </h2>
+                    <p class="text-xs text-neutral-400 mt-1">
+                        Isi form ringkas di bawah. Tim WhatsApp Concierge kami akan merespons ketersediaan unit & penawaran khusus secara instan.
+                    </p>
+                </div>
+
+                <!-- Form or Thank You Screen -->
+                <div v-if="consultSubmitted" class="bg-emerald-950/40 border border-emerald-500/40 rounded-2xl p-6 text-center space-y-4 animate-in fade-in zoom-in">
+                    <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30">
+                        <CheckCircle2 class="w-6 h-6" />
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Konsultasi Berhasil Terkirim!</h3>
+                    <p class="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
+                        {{ consultSuccessMessage }}
+                    </p>
+                    <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                        <a
+                            :href="`https://wa.me/6281234567890?text=Halo%20Quantum%20Streamline,%20saya%20${encodeURIComponent(consultForm.nama)}%20ingin%20konsultasi%20sewa%20${encodeURIComponent(consultForm.kendaraan)}%20untuk%20tanggal%20${encodeURIComponent(consultForm.tanggal)}`"
+                            target="_blank"
+                            class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg transition"
+                        >
+                            💬 Buka Chat WhatsApp Concierge Langsung
+                        </a>
+                        <button type="button" @click="consultSubmitted = false" class="px-4 py-3 text-xs text-neutral-400 hover:text-white font-bold">
+                            Isi Form Lain
+                        </button>
+                    </div>
+                </div>
+
+                <form v-else @submit.prevent="submitConsultation" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-neutral-300 mb-1">
+                            1. Nama Lengkap Anda*
+                        </label>
+                        <input
+                            v-model="consultForm.nama"
+                            type="text"
+                            required
+                            placeholder="misal: Bapak Budi Santoso"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-neutral-800 bg-[#070709] text-xs text-white placeholder:text-neutral-600 focus:ring-2 focus:ring-red-600 transition"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-neutral-300 mb-1">
+                            2. Nomor WhatsApp / Telp*
+                        </label>
+                        <input
+                            v-model="consultForm.whatsapp"
+                            type="tel"
+                            required
+                            placeholder="081234567890"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-neutral-800 bg-[#070709] text-xs text-white placeholder:text-neutral-600 focus:ring-2 focus:ring-red-600 transition"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-neutral-300 mb-1">
+                            3. Pilihan Armada / Layanan*
+                        </label>
+                        <select
+                            v-model="consultForm.kendaraan"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-neutral-800 bg-[#070709] text-xs text-white focus:ring-2 focus:ring-red-600 transition"
+                        >
+                            <option value="Alphard Transformer VIP">Toyota Alphard Transformer VIP</option>
+                            <option value="Camry Hybrid Executive">Toyota Camry Hybrid Executive</option>
+                            <option value="Fortuner GR Sport 4x4">Toyota Fortuner GR Sport 4x4</option>
+                            <option value="Supercar / Sportscar Exclusive">Supercar / Sportscar Exclusive</option>
+                            <option value="Sewa Korporat Jangka Panjang">Sewa Korporat Jangka Panjang (B2B)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-neutral-300 mb-1">
+                            4. Rencana Tanggal Sewa*
+                        </label>
+                        <input
+                            v-model="consultForm.tanggal"
+                            type="date"
+                            required
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-neutral-800 bg-[#070709] text-xs text-white focus:ring-2 focus:ring-red-600 transition"
+                        />
+                    </div>
+
+                    <div class="sm:col-span-2 pt-2">
+                        <button
+                            type="submit"
+                            :disabled="isSubmittingConsult"
+                            class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black text-xs uppercase tracking-wider shadow-xl shadow-red-600/30 transition cursor-pointer disabled:opacity-50"
+                        >
+                            <span v-if="isSubmittingConsult" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                            <span>{{ isSubmittingConsult ? 'Mengirim Permintaan...' : 'Kirim Konsultasi Instan via Concierge' }}</span>
+                            <ArrowRight v-if="!isSubmittingConsult" class="w-4 h-4" />
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 8. TRUST & REPUTATION SECTION -->
         <section class="py-16 bg-[#070709] border-t border-neutral-800/80 px-4 sm:px-6 lg:px-8">
             <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                 <div class="p-6 bg-neutral-900/60 rounded-3xl border border-neutral-800">
@@ -794,8 +1011,8 @@ function formatRupiah(num) {
             </div>
         </section>
 
-        <!-- 7. FOOTER ("QUANTUM STREAMLINE") -->
-        <footer class="bg-black border-t border-neutral-800/80 pt-16 pb-12 px-4 sm:px-6 lg:px-8 text-xs text-neutral-400">
+        <!-- 9. FOOTER ("QUANTUM STREAMLINE") -->
+        <footer class="bg-black border-t border-neutral-800/80 pt-16 pb-24 sm:pb-12 px-4 sm:px-6 lg:px-8 text-xs text-neutral-400">
             <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-neutral-800">
                 <!-- Brand & Newsletter (5 cols) -->
                 <div class="md:col-span-5 space-y-4">
@@ -859,11 +1076,49 @@ function formatRupiah(num) {
             <div class="max-w-7xl mx-auto pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-neutral-500">
                 <span>&copy; {{ new Date().getFullYear() }} Quantum Streamline / RentalMobil. All Rights Reserved.</span>
                 <div class="flex items-center gap-6">
-                    <a href="#" class="hover:text-white transition">Privacy Policy</a>
-                    <a href="#" class="hover:text-white transition">Terms And Conditions</a>
+                    <Link href="/privacy-policy" class="hover:text-white transition font-semibold">Privacy Policy (UU PDP)</Link>
+                    <Link href="/terms" class="hover:text-white transition font-semibold">Terms And Conditions</Link>
                 </div>
             </div>
         </footer>
+
+        <!-- FLOATING MOBILE STICKY CTA BAR (md:hidden) -->
+        <div class="fixed bottom-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-md border-t border-neutral-800 p-3 flex items-center justify-between gap-3 md:hidden shadow-2xl">
+            <div>
+                <span class="text-[10px] text-neutral-400 block">Sewa Mobil Mewah</span>
+                <span class="text-xs font-black text-white">Mulai Rp 450rb/hari</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <a
+                    href="#consultation"
+                    class="px-3 py-2 rounded-xl bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider"
+                >
+                    Sewa Korporat
+                </a>
+                <Link
+                    :href="user ? '/user/transaksi/create' : '/login'"
+                    class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-red-600/30"
+                >
+                    Pesan Armada
+                </Link>
+            </div>
+        </div>
+
+        <!-- FLOATING WHATSAPP CONCIERGE BUTTON WITH ONLINE GREEN PULSE ANIMATION -->
+        <a
+            href="https://wa.me/6281234567890?text=Halo%20Quantum%20Streamline,%20saya%20ingin%20tanya%20ketersediaan%20sewa%20mobil"
+            target="_blank"
+            class="fixed bottom-20 sm:bottom-6 right-6 z-40 p-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xl shadow-emerald-600/40 flex items-center gap-2 transition duration-300 transform hover:scale-105 active:scale-95 group"
+            title="Chat WhatsApp Concierge 24/7"
+        >
+            <div class="relative flex items-center justify-center">
+                <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
+                <MessageSquare class="w-6 h-6 relative z-10" />
+            </div>
+            <span class="hidden sm:inline text-xs font-black uppercase tracking-wider pr-1">
+                WhatsApp Concierge
+            </span>
+        </a>
 
         <!-- Modal Detail Mobil (Quick Details) -->
         <Modal

@@ -41,4 +41,27 @@ class RentalMobil extends Model
             ? asset('/gambar_mobil/' . $this->gambar)
             : asset('/images/audi_front_dark.jpg');
     }
+
+    /**
+     * Pengecekan overlap jadwal sewa armada berbasis timeline
+     */
+    public function hasScheduleOverlap(string $startDate, string $endDate, ?int $excludeTransaksiId = null): ?Transaksi
+    {
+        $query = Transaksi::where('mobil_id', $this->id)
+            ->whereIn('status', ['pending', 'disetujui', 'dikonfirmasi', 'selesai'])
+            ->where(function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('tanggal_mulai', [$startDate, $endDate])
+                  ->orWhereBetween('tanggal_selesai', [$startDate, $endDate])
+                  ->orWhere(function ($sub) use ($startDate, $endDate) {
+                      $sub->where('tanggal_mulai', '<=', $startDate)
+                          ->where('tanggal_selesai', '>=', $endDate);
+                  });
+            });
+
+        if ($excludeTransaksiId) {
+            $query->where('id', '!=', $excludeTransaksiId);
+        }
+
+        return $query->first();
+    }
 }

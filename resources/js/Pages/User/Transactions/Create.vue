@@ -60,14 +60,18 @@ const form = useForm({
     layanan: props.initialLayanan || 'lepas_kunci',
     no_hp_pelanggan: '',
     lokasi_jemput: props.initialLokasi || 'Bandara Soekarno-Hatta (CGK)',
+    jarak_pengantaran_km: 0,
+    biaya_pengantaran: 0,
     tanggal_mulai: today,
     jam_mulai: '09:00',
     tanggal_selesai: tomorrow,
     jam_selesai: '09:00',
+    extra_hours: 0,
     asuransi_tambahan: true,
     catatan_sopir: '',
     metode_pembayaran: 'bca_va',
     pdp_consent: true,
+    terms_agreed: false,
     ktp: null,
     sim: null,
 });
@@ -233,8 +237,119 @@ const insuranceCost = computed(() => {
     return 50000 * durationDays.value;
 });
 
+// Point 5D: Add-on Jam Tambahan (Rp 35.000 / jam)
+const extraHoursCost = computed(() => {
+    return (Number(form.extra_hours) || 0) * 35000;
+});
+
+// Point 5C: Google Maps Distance Matrix Live Calculation
+const isCalculatingDistance = ref(false);
+const deliveryInfo = ref({
+    distance_km: 0,
+    duration_text: '',
+    delivery_cost: 0,
+    origin: '',
+    is_fallback: false,
+});
+
+async function fetchDeliveryCost(location) {
+    if (!location) return;
+    isCalculatingDistance.value = true;
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const res = await fetch('/transaksi/calculate-delivery', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ lokasi_jemput: location }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            deliveryInfo.value = data;
+            form.jarak_pengantaran_km = data.distance_km;
+            form.biaya_pengantaran = data.delivery_cost;
+        }
+    } catch (e) {
+        console.warn('Delivery calculation error:', e);
+    } finally {
+        isCalculatingDistance.value = false;
+    }
+}
+
+let debounceLocTimer = null;
+function onLocationChange() {
+    if (debounceLocTimer) clearTimeout(debounceLocTimer);
+    debounceLocTimer = setTimeout(() => {
+        fetchDeliveryCost(form.lokasi_jemput);
+    }, 500);
+}
+
+function selectQuickLocation(loc) {
+    form.lokasi_jemput = loc;
+    fetchDeliveryCost(loc);
+}
+
+onMounted(() => {
+    fetchDeliveryCost(form.lokasi_jemput);
+});
+
+// Fase 2: Real-Time Client-Side Availability Check Engine
+const isCheckingAvailability = ref(false);
+const availabilityStatus = ref({
+    available: true,
+    message: '',
+});
+
+let debounceAvailTimer = null;
+async function fetchCarAvailability() {
+    if (!form.mobil_id || !form.tanggal_mulai || !form.tanggal_selesai) return;
+    isCheckingAvailability.value = true;
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const res = await fetch('/transaksi/check-availability', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                mobil_id: form.mobil_id,
+                tanggal_mulai: form.tanggal_mulai,
+                tanggal_selesai: form.tanggal_selesai,
+            }),
+        });
+        const data = await res.json();
+        availabilityStatus.value = {
+            available: Boolean(data.available),
+            message: data.message || '',
+        };
+    } catch (e) {
+        console.warn('Availability check network error:', e);
+    } finally {
+        isCheckingAvailability.value = false;
+    }
+}
+
+watch(
+    () => [form.mobil_id, form.tanggal_mulai, form.tanggal_selesai],
+    () => {
+        if (debounceAvailTimer) clearTimeout(debounceAvailTimer);
+        debounceAvailTimer = setTimeout(() => {
+            fetchCarAvailability();
+        }, 400);
+    },
+    { immediate: true }
+);
+
+// Point 5E: Terms & Conditions Modal State
+const isTermsModalOpen = ref(false);
+
 const grandTotal = computed(() => {
-    return baseCarTotal.value + driverCost.value + insuranceCost.value;
+    return baseCarTotal.value + driverCost.value + insuranceCost.value + extraHoursCost.value + (Number(form.biaya_pengantaran) || 0);
 });
 
 function formatRupiah(num) {
@@ -294,7 +409,8 @@ const step1Valid = computed(() => {
         !!form.tanggal_mulai &&
         !!form.tanggal_selesai &&
         !!form.no_hp_pelanggan &&
-        form.pdp_consent;
+        form.pdp_consent &&
+        availabilityStatus.value.available;
 
     if (form.layanan === 'lepas_kunci') {
         return basic && !!form.ktp && !!form.sim && isPhoneVerified.value;
@@ -591,6 +707,7 @@ function submitBooking() {
                                     v-model="form.lokasi_jemput"
                                     type="text"
                                     required
+                                    @input="onLocationChange"
                                     placeholder="Contoh: Bandara Soetta T3, Hotel Mulia, dll"
                                     class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-neutral-800 bg-[#070709] text-xs text-white focus:ring-2 focus:ring-red-600 focus:border-red-600 transition"
                                 />
@@ -600,11 +717,35 @@ function submitBooking() {
                                     v-for="loc in quickLocations"
                                     :key="loc"
                                     type="button"
-                                    @click="form.lokasi_jemput = loc"
+                                    @click="selectQuickLocation(loc)"
                                     class="px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-800 text-[10px] font-bold text-neutral-400 hover:text-white hover:border-neutral-700 transition cursor-pointer"
                                 >
                                     {{ loc }}
                                 </button>
+                            </div>
+
+                            <!-- Point 5C: Google Maps Distance Banner -->
+                            <div v-if="deliveryInfo.distance_km !== null" class="mt-2.5 p-3 rounded-xl bg-[#0a0a0f] border border-neutral-800 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-7 h-7 rounded-lg bg-red-600/20 text-red-500 flex items-center justify-center shrink-0 border border-red-500/30">
+                                        <MapPin class="w-3.5 h-3.5" />
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-white font-bold text-xs">Jarak dari Garasi: {{ deliveryInfo.distance_km }} km</span>
+                                            <span class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-red-600/20 text-red-400 border border-red-500/30">
+                                                Google Maps API
+                                            </span>
+                                        </div>
+                                        <span class="text-[11px] text-neutral-400">Est. Waktu Antar: {{ deliveryInfo.duration_text }}</span>
+                                    </div>
+                                </div>
+                                <div class="text-left sm:text-right shrink-0">
+                                    <span class="text-[10px] uppercase text-neutral-500 block font-bold">Biaya Antar Luar Kota</span>
+                                    <span class="text-xs font-black" :class="deliveryInfo.delivery_cost > 0 ? 'text-amber-400' : 'text-emerald-400'">
+                                        {{ deliveryInfo.delivery_cost > 0 ? formatRupiah(deliveryInfo.delivery_cost) : 'GRATIS (Pool/Garasi)' }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -644,6 +785,62 @@ function submitBooking() {
                                     type="time"
                                     class="w-full mt-1.5 px-3 py-1.5 rounded-xl border border-neutral-800 bg-[#070709] text-xs text-neutral-300"
                                 />
+                            </div>
+                        </div>
+
+                        <!-- Live Availability Status Badge (Fase 2 Timeline Engine) -->
+                        <div v-if="availabilityStatus.message" class="p-3 rounded-2xl border text-xs flex items-center gap-2.5 transition"
+                            :class="availabilityStatus.available 
+                                ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300' 
+                                : 'bg-red-950/80 border-red-500/60 text-red-300 font-bold shadow-lg shadow-red-950/50'">
+                            <div :class="availabilityStatus.available ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'" class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 border">
+                                <span v-if="isCheckingAvailability" class="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+                                <Check v-else-if="availabilityStatus.available" class="w-3.5 h-3.5" />
+                                <AlertCircle v-else class="w-3.5 h-3.5" />
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-bold leading-tight">{{ availabilityStatus.message }}</p>
+                                <p v-if="!availabilityStatus.available" class="text-[10px] text-red-300/90 font-normal mt-0.5">
+                                    Tombol pembayaran dinonaktifkan sampai Anda memilih rentang tanggal atau unit mobil lain.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Point 5D: Add-on Jam Tambahan (Extra Hours) -->
+                        <div class="bg-neutral-900/90 rounded-2xl p-4 border border-neutral-800 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <Clock class="w-4 h-4 text-amber-400" />
+                                        <h4 class="text-xs font-black uppercase tracking-wider text-white">
+                                            Add-on Jam Tambahan (Fleksibilitas Sewa)
+                                        </h4>
+                                    </div>
+                                    <p class="text-[11px] text-neutral-400 mt-0.5">
+                                        Butuh waktu ekstra di luar kelipatan 24 jam? Tambahkan jam resmi hanya Rp 35.000/jam (lebih hemat daripada denda telat).
+                                    </p>
+                                </div>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-950/80 text-amber-400 border border-amber-500/30 hidden sm:inline">
+                                    Lebih Hemat
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                                <button
+                                    v-for="hrs in [0, 2, 4, 6]"
+                                    :key="hrs"
+                                    type="button"
+                                    @click="form.extra_hours = hrs"
+                                    :class="[
+                                        'p-2.5 rounded-xl border text-center transition cursor-pointer',
+                                        form.extra_hours === hrs
+                                            ? 'bg-gradient-to-r from-red-600 to-rose-600 border-red-500 text-white shadow-lg shadow-red-600/30 font-black'
+                                            : 'bg-[#070709] border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700'
+                                    ]"
+                                >
+                                    <div class="text-xs font-bold">{{ hrs === 0 ? 'Standard 24h' : `+${hrs} Jam` }}</div>
+                                    <div class="text-[10px] opacity-80 mt-0.5">{{ hrs === 0 ? 'Rp 0' : formatRupiah(hrs * 35000) }}</div>
+                                </button>
                             </div>
                         </div>
 
@@ -961,6 +1158,20 @@ function submitBooking() {
                                 <span class="font-bold text-white">{{ formatRupiah(insuranceCost) }}</span>
                             </div>
 
+                            <!-- Point 5D: Extra Hours Line Item -->
+                            <div v-if="form.extra_hours > 0" class="flex justify-between text-neutral-300">
+                                <span>Add-on Waktu (+{{ form.extra_hours }} Jam @ Rp 35.000)</span>
+                                <span class="font-bold text-amber-400">{{ formatRupiah(extraHoursCost) }}</span>
+                            </div>
+
+                            <!-- Point 5C: Google Maps Delivery Fee Line Item -->
+                            <div class="flex justify-between text-neutral-300">
+                                <span>Pengantaran (Google Maps {{ deliveryInfo.distance_km }} km)</span>
+                                <span class="font-bold" :class="form.biaya_pengantaran > 0 ? 'text-white' : 'text-emerald-400'">
+                                    {{ form.biaya_pengantaran > 0 ? formatRupiah(form.biaya_pengantaran) : 'GRATIS (Pool/Garasi)' }}
+                                </span>
+                            </div>
+
                             <div class="flex justify-between text-neutral-400">
                                 <span>Biaya Layanan & Pajak</span>
                                 <span class="font-bold text-emerald-400">GRATIS</span>
@@ -981,15 +1192,45 @@ function submitBooking() {
                             </div>
                         </div>
 
+                        <!-- Point 5E: Explicit T&C Checkbox Before Payment -->
+                        <div class="bg-neutral-900/90 rounded-2xl p-4 border border-neutral-800 space-y-2">
+                            <label class="flex items-start gap-3 cursor-pointer">
+                                <input
+                                    v-model="form.terms_agreed"
+                                    type="checkbox"
+                                    required
+                                    class="mt-1 w-4 h-4 rounded text-red-600 bg-neutral-800 border-neutral-700 focus:ring-red-500 cursor-pointer"
+                                />
+                                <div class="text-[11px] text-neutral-300 leading-relaxed">
+                                    <span>Saya telah membaca, memahami, dan menyetujui seluruh </span>
+                                    <button
+                                        type="button"
+                                        @click="isTermsModalOpen = true"
+                                        class="text-red-400 font-bold underline hover:text-red-300 cursor-pointer inline"
+                                    >
+                                        Syarat & Ketentuan Sewa
+                                    </button>
+                                    <span>, Kebijakan Keterlambatan (grace period 30 menit), Pengembalian BBM Same-to-Same, dan Aturan Pembatalan Bertingkat.</span>
+                                </div>
+                            </label>
+                        </div>
+
                         <!-- Submit Final Button -->
                         <button
                             type="button"
                             @click="submitBooking"
-                            :disabled="form.processing"
-                            class="w-full inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:opacity-90 active:scale-98 text-white text-xs font-black uppercase tracking-wider shadow-2xl shadow-red-600/30 transition duration-200 cursor-pointer disabled:opacity-50"
+                            :disabled="form.processing || !form.terms_agreed"
+                            :class="[
+                                'w-full inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl text-xs font-black uppercase tracking-wider shadow-2xl transition duration-200',
+                                !form.terms_agreed
+                                    ? 'bg-neutral-800 text-neutral-500 cursor-not-allowed border border-neutral-700'
+                                    : 'bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:opacity-90 active:scale-98 text-white shadow-red-600/30 cursor-pointer'
+                            ]"
                         >
                             <Sparkles class="w-4 h-4" />
-                            <span>{{ form.processing ? 'Memproses Reservasi...' : 'Bayar Sekarang & Terbitkan E-Voucher' }}</span>
+                            <span>
+                                {{ form.processing ? 'Memproses Reservasi...' : (!form.terms_agreed ? 'Centang S&K di Atas untuk Membayar' : 'Bayar Sekarang & Terbitkan E-Voucher') }}
+                            </span>
                         </button>
 
                         <p class="text-[11px] text-neutral-500 text-center leading-relaxed">
@@ -1010,6 +1251,94 @@ function submitBooking() {
                 <p class="text-xs text-neutral-400 leading-relaxed">
                     Sistem sedang memvalidasi pembayaran dan mengalokasikan unit kendaraan Anda. Anda akan segera diarahkan ke E-Voucher digital...
                 </p>
+            </div>
+        </div>
+
+        <!-- Point 5E: Interactive Terms & Conditions Modal -->
+        <div
+            v-if="isTermsModalOpen"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+            @click.self="isTermsModalOpen = false"
+        >
+            <div class="bg-[#0f1015] border border-neutral-800 rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden text-slate-200 animate-in fade-in zoom-in duration-200">
+                <div class="p-6 border-b border-neutral-800 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <Shield class="w-5 h-5 text-red-500" />
+                        <h3 class="text-base font-black uppercase tracking-wider text-white">
+                            Syarat & Ketentuan Sewa Resmi
+                        </h3>
+                    </div>
+                    <button
+                        type="button"
+                        @click="isTermsModalOpen = false"
+                        class="p-2 rounded-xl bg-neutral-900 text-neutral-400 hover:text-white transition"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                <div class="p-6 overflow-y-auto space-y-5 text-xs text-neutral-300 leading-relaxed">
+                    <!-- Point A -->
+                    <div class="p-4 rounded-2xl bg-black/40 border border-neutral-800 space-y-2">
+                        <h4 class="font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+                            <Clock class="w-4 h-4" /> 1. Kebijakan Keterlambatan Pengembalian (Late Return)
+                        </h4>
+                        <ul class="list-disc pl-4 space-y-1 text-neutral-400 text-[11px]">
+                            <li><b>Masa Tenggang (Grace Period):</b> 30 menit pertama dari jadwal pengembalian adalah <b>BEBAS DENDA</b>.</li>
+                            <li><b>Telat 31 s/d 180 Menit:</b> Dikenakan denda <b>Rp 50.000 / jam</b>, dihitung proporsional per menit (tanpa pembulatan ke atas).</li>
+                            <li><b>Telat > 180 Menit:</b> Otomatis dianggap sebagai <b>sewa tambahan 1 hari penuh</b> sesuai tarif harian resmi mobil.</li>
+                            <li>Denda dihitung otomatis oleh sistem saat admin menandai unit kembali di dashboard.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Point B -->
+                    <div class="p-4 rounded-2xl bg-black/40 border border-neutral-800 space-y-2">
+                        <h4 class="font-bold text-red-400 uppercase tracking-wider flex items-center gap-2">
+                            <Coins class="w-4 h-4" /> 2. Kebijakan Pembatalan Bertingkat
+                        </h4>
+                        <ul class="list-disc pl-4 space-y-1 text-neutral-400 text-[11px]">
+                            <li><b>H-2 atau Lebih (>48 Jam):</b> Refund 100% penuh (hanya dipotong biaya admin bank transfer Rp 10.000).</li>
+                            <li><b>H-1 (24 - 48 Jam):</b> Refund 50% dari total nilai transaksi.</li>
+                            <li><b>Hari-H (<24 Jam):</b> Refund 0% (Hangus karena unit sudah di-lock).</li>
+                        </ul>
+                    </div>
+
+                    <!-- Point C & D -->
+                    <div class="p-4 rounded-2xl bg-black/40 border border-neutral-800 space-y-2">
+                        <h4 class="font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2">
+                            <Fuel class="w-4 h-4" /> 3. Kebijakan Bahan Bakar (Same-to-Same) & Jarak Tempuh
+                        </h4>
+                        <ul class="list-disc pl-4 space-y-1 text-neutral-400 text-[11px]">
+                            <li>Mobil dikembalikan dengan level bensin yang sama seperti saat serah terima. Selisih kekurangan bensin dikenakan biaya SPBU + jasa Rp 25.000.</li>
+                            <li>Batas jarak tempuh lepas kunci adalah 300 km/hari. Kelebihan jarak dikenakan Rp 1.500 / km.</li>
+                            <li>Biaya antar-jemput luar kota dihitung otomatis via Google Maps API (Rp 4.000/km dari pool Bandara Soetta T3).</li>
+                        </ul>
+                    </div>
+
+                    <!-- Point E -->
+                    <div class="p-4 rounded-2xl bg-black/40 border border-neutral-800 space-y-2">
+                        <h4 class="font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                            <Shield class="w-4 h-4" /> 4. Asuransi & Klaim Kerusakan
+                        </h4>
+                        <ul class="list-disc pl-4 space-y-1 text-neutral-400 text-[11px]">
+                            <li>Bagi penyewa dengan add-on proteksi total, jika terjadi insiden hanya menanggung biaya klaim Own Risk (OR) Rp 300.000 – Rp 500.000 per insiden.</li>
+                            <li>Penyewa tanpa proteksi bertanggung jawab penuh atas biaya bengkel resmi dan biaya sewa unit selama perbaikan.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="p-6 border-t border-neutral-800 bg-neutral-950 flex items-center justify-between">
+                    <Link href="/terms" target="_blank" class="text-xs text-neutral-400 hover:text-white underline">
+                        Buka Halaman Lengkap S&K ↗
+                    </Link>
+                    <button
+                        type="button"
+                        @click="form.terms_agreed = true; isTermsModalOpen = false;"
+                        class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer"
+                    >
+                        Saya Mengerti & Setuju
+                    </button>
+                </div>
             </div>
         </div>
     </AuthenticatedLayout>
