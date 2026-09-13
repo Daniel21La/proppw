@@ -78,6 +78,8 @@ Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->prefix('admin'
     Route::post('/transaksi/{id}/toggle-dispute', [\App\Http\Controllers\DocumentController::class, 'toggleDispute'])->name('admin.transaksi.dispute');
 
     Route::get('/laporan', [RentalMobilController::class, 'laporan'])->name('admin.laporan.index');
+    Route::get('/laporan/export-excel', [\App\Http\Controllers\Admin\LaporanExportController::class, 'exportExcel'])->name('admin.laporan.export-excel');
+    Route::get('/laporan/export-pdf', [\App\Http\Controllers\Admin\LaporanExportController::class, 'exportPdf'])->name('admin.laporan.export-pdf');
     Route::post('/transaksi/{id}/settle-fine', [\App\Http\Controllers\Admin\AdminInventoryController::class, 'settleFine'])->name('admin.transaksi.settle-fine');
 });
 

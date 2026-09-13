@@ -23,8 +23,22 @@ import {
 } from 'lucide-vue-next';
 import { useT } from '@/locales/translations';
 import Modal from '@/Components/Modal.vue';
+import AuthModal from '@/Components/AuthModal.vue';
 
 const { t, currentLang, setLanguage } = useT();
+
+const authModalOpen = ref(false);
+const authModalMode = ref('login');
+
+function openLoginModal() {
+    authModalMode.value = 'login';
+    authModalOpen.value = true;
+}
+
+function openRegisterModal() {
+    authModalMode.value = 'register';
+    authModalOpen.value = true;
+}
 
 const props = defineProps({
     mobils: {
@@ -166,17 +180,6 @@ function submitConsultation() {
     </Head>
 
     <div class="min-h-screen bg-[#070709] text-white font-sans selection:bg-red-600 selection:text-white flex flex-col relative overflow-x-hidden">
-        <!-- Floating WhatsApp Assistance Button -->
-        <a
-            href="https://wa.me/6281234567890?text=Halo%20RentalMobil,%20saya%20tertarik%20untuk%20sewa%20mobil"
-            target="_blank"
-            class="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2.5 px-4 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-2xl shadow-emerald-600/50 transition-all transform hover:scale-105"
-            title="Chat via WhatsApp"
-        >
-            <MessageSquare class="w-4 h-4 fill-white" />
-            <span class="hidden sm:inline">{{ t('checkout.needHelp') }}</span>
-        </a>
-
         <!-- Top Navigation Bar -->
         <header class="sticky top-0 z-40 bg-[#070709]/90 backdrop-blur-md border-b border-neutral-800/80">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
@@ -243,18 +246,20 @@ function submitConsultation() {
                         </Link>
                     </template>
                     <template v-else>
-                        <Link
-                            href="/login"
-                            class="hidden sm:inline-flex px-3 py-2 text-xs font-bold text-neutral-300 hover:text-white transition"
+                        <button
+                            type="button"
+                            @click="openLoginModal"
+                            class="hidden sm:inline-flex px-3 py-2 text-xs font-bold text-neutral-300 hover:text-white transition hover:scale-105 active:scale-95 cursor-pointer"
                         >
                             {{ t('nav.login') }}
-                        </Link>
-                        <Link
-                            href="/register"
-                            class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-lg shadow-red-600/25 transition active:scale-95"
+                        </button>
+                        <button
+                            type="button"
+                            @click="openRegisterModal"
+                            class="px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-bold shadow-lg shadow-red-600/25 transition hover:-translate-y-0.5 active:scale-95 cursor-pointer"
                         >
                             {{ t('nav.register') }}
-                        </Link>
+                        </button>
                     </template>
                 </div>
             </div>
@@ -1108,7 +1113,7 @@ function submitConsultation() {
         <a
             href="https://wa.me/6281234567890?text=Halo%20Quantum%20Streamline,%20saya%20ingin%20tanya%20ketersediaan%20sewa%20mobil"
             target="_blank"
-            class="fixed bottom-20 sm:bottom-6 right-6 z-40 p-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xl shadow-emerald-600/40 flex items-center gap-2 transition duration-300 transform hover:scale-105 active:scale-95 group"
+            class="fixed bottom-20 sm:bottom-6 right-6 z-50 p-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xl shadow-emerald-600/40 flex items-center gap-2 transition duration-300 transform hover:scale-105 active:scale-95 group"
             title="Chat WhatsApp Concierge 24/7"
         >
             <div class="relative flex items-center justify-center">
@@ -1168,8 +1173,17 @@ function submitConsultation() {
                     >
                         Tutup
                     </button>
+                    <button
+                        v-if="!user"
+                        type="button"
+                        @click="carModalOpen = false; openLoginModal()"
+                        class="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black uppercase tracking-wider shadow-md shadow-red-600/30"
+                    >
+                        Pesan Sekarang
+                    </button>
                     <Link
-                        :href="user ? `/transaksi/create?mobil_id=${selectedCarForModal.id}` : '/login'"
+                        v-else
+                        :href="`/transaksi/create?mobil_id=${selectedCarForModal.id}`"
                         class="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black uppercase tracking-wider shadow-md shadow-red-600/30"
                     >
                         Pesan Sekarang
@@ -1177,5 +1191,12 @@ function submitConsultation() {
                 </div>
             </div>
         </Modal>
+
+        <!-- FLOATING AUTH MODAL (LOGIN & REGISTER ON-PAGE) -->
+        <AuthModal
+            :show="authModalOpen"
+            :initialMode="authModalMode"
+            @close="authModalOpen = false"
+        />
     </div>
 </template>

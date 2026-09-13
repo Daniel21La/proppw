@@ -10,6 +10,7 @@ import {
     TrendingUp,
     Shield,
     FileSpreadsheet,
+    FileText,
     Sparkles,
 } from 'lucide-vue-next';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -64,19 +65,40 @@ const approvedTransactions = computed(() => {
         <Head title="Laporan Keuangan & Statistik - Quantum Streamline" />
 
         <!-- Header -->
-        <div class="mb-8">
-            <div class="flex items-center gap-2 mb-1">
-                <div class="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
-                <span class="text-[11px] font-black tracking-widest text-red-500 uppercase">
-                    Financial & Fleet Analytics
-                </span>
+        <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <div class="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+                    <span class="text-[11px] font-black tracking-widest text-red-500 uppercase">
+                        Financial & Fleet Analytics
+                    </span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">
+                    Laporan Keuangan & Utilisasi Armada
+                </h1>
+                <p class="text-xs sm:text-sm text-neutral-400 mt-1">
+                    Rekapitulasi pendapatan kotor, tingkat okupansi unit armada, dan performa transaksi booking.
+                </p>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">
-                Laporan Keuangan & Utilisasi Armada
-            </h1>
-            <p class="text-xs sm:text-sm text-neutral-400 mt-1">
-                Rekapitulasi pendapatan kotor, tingkat okupansi unit armada, dan performa transaksi booking.
-            </p>
+
+            <!-- Export Buttons -->
+            <div class="flex items-center gap-3 shrink-0">
+                <a
+                    href="/admin/laporan/export-pdf"
+                    target="_blank"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-white font-bold text-xs uppercase tracking-wider shadow-lg transition transform hover:-translate-y-0.5 active:scale-95 group"
+                >
+                    <FileText class="w-4 h-4 text-red-500 group-hover:scale-110 transition" />
+                    <span>Cetak PDF Laporan</span>
+                </a>
+                <a
+                    href="/admin/laporan/export-excel"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-emerald-600/30 transition transform hover:-translate-y-0.5 active:scale-95 group"
+                >
+                    <FileSpreadsheet class="w-4 h-4 text-white group-hover:scale-110 transition" />
+                    <span>Unduh Excel (CSV)</span>
+                </a>
+            </div>
         </div>
 
         <!-- Metric Stat Cards -->
