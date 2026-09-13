@@ -59,7 +59,7 @@ const durationDays = computed(() => {
 });
 
 function printVoucher() {
-    window.print();
+    window.open(`/transaksi/${props.transaksi.id}/invoice?print=1`, '_blank');
 }
 
 // Point 5B: Rental Extension (Extend) State & Handler
@@ -144,6 +144,15 @@ function submitExtend() {
                     >
                         <MessageSquare class="w-3.5 h-3.5" />
                         {{ t('checkout.needHelp') }}
+                    </a>
+
+                    <a
+                        :href="`/transaksi/${transaksi.id}/invoice`"
+                        target="_blank"
+                        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-slate-200 border border-neutral-700 text-xs font-bold transition active:scale-95"
+                    >
+                        <FileText class="w-4 h-4 text-red-400" />
+                        Invoice Standalone
                     </a>
 
                     <button

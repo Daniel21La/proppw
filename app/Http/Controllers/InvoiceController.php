@@ -45,6 +45,7 @@ class InvoiceController extends Controller
                     'transmisi' => $transaksi->mobil->transmisi,
                     'harga_per_hari' => $transaksi->mobil->harga_per_hari,
                     'biaya_sopir_per_hari' => $transaksi->mobil->biaya_sopir_per_hari,
+                    'gambar' => $transaksi->mobil->gambar,
                     'gambar_url' => $transaksi->mobil->gambar_url,
                 ] : null,
                 'layanan' => $transaksi->layanan,

@@ -37,9 +37,19 @@ class RentalMobil extends Model
 
     public function getGambarUrlAttribute()
     {
-        return $this->gambar
-            ? asset('/gambar_mobil/' . $this->gambar)
-            : asset('/images/audi_front_dark.jpg');
+        if (!$this->gambar) {
+            return asset('/images/audi_front_dark.jpg');
+        }
+        if (str_starts_with($this->gambar, 'http://') || str_starts_with($this->gambar, 'https://')) {
+            return $this->gambar;
+        }
+        if (file_exists(public_path('images/' . $this->gambar))) {
+            return asset('/images/' . $this->gambar);
+        }
+        if (file_exists(public_path('gambar_mobil/' . $this->gambar))) {
+            return asset('/gambar_mobil/' . $this->gambar);
+        }
+        return asset('/gambar_mobil/' . $this->gambar);
     }
 
     /**

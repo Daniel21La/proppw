@@ -14,6 +14,7 @@ import {
     Shield,
     Key,
     UserCheck,
+    Printer,
 } from 'lucide-vue-next';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Badge from '@/Components/Badge.vue';
@@ -207,15 +208,26 @@ function cancelBooking(id) {
                             <!-- Action: E-Voucher Link -->
                             <td class="py-4 px-6 text-right">
                                 <div class="flex items-center justify-end gap-2">
-                                    <!-- Direct Link to E-Voucher -->
+                                    <!-- Direct Link to E-Voucher Detail -->
                                     <Link
                                         :href="`/transaksi/${t.id}`"
-                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-800 hover:bg-red-600/90 text-white border border-neutral-700 hover:border-red-500 font-bold transition text-xs cursor-pointer shadow-sm"
-                                        title="Buka E-Voucher Digital"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700 font-bold transition text-xs cursor-pointer shadow-sm"
+                                        title="Buka Detail E-Voucher"
                                     >
-                                        <Ticket class="w-3.5 h-3.5 text-red-400 group-hover:text-white" />
-                                        <span>E-Voucher</span>
+                                        <Ticket class="w-3.5 h-3.5 text-amber-400" />
+                                        <span>Detail</span>
                                     </Link>
+
+                                    <!-- Direct Print PDF Button -->
+                                    <a
+                                        :href="`/transaksi/${t.id}/invoice?print=1`"
+                                        target="_blank"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-bold transition text-xs cursor-pointer shadow-sm"
+                                        title="Cetak / Unduh PDF E-Voucher"
+                                    >
+                                        <Printer class="w-3.5 h-3.5" />
+                                        <span>Cetak PDF</span>
+                                    </a>
 
                                     <!-- Cancel button if pending -->
                                     <button

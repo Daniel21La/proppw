@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 
 const props = defineProps({
     transaksi: {
@@ -20,6 +20,15 @@ const formatRupiah = (val) => {
 const handlePrint = () => {
     window.print();
 };
+
+onMounted(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('print') === '1' || params.has('auto_print')) {
+        setTimeout(() => {
+            window.print();
+        }, 400);
+    }
+});
 
 const qrCodeUrl = computed(() => {
     const bookingNo = props.transaksi.nomor_booking || props.transaksi.id;
@@ -127,7 +136,7 @@ const qrCodeUrl = computed(() => {
                             <div class="w-20 h-14 rounded-xl bg-neutral-900 overflow-hidden shrink-0 border border-slate-700 print:border-slate-300 flex items-center justify-center">
                                 <img
                                     v-if="transaksi.mobil"
-                                    :src="`/gambar_mobil/${transaksi.mobil.gambar}`"
+                                    :src="transaksi.mobil.gambar_url || `/gambar_mobil/${transaksi.mobil.gambar}`"
                                     :alt="transaksi.mobil.nama_mobil"
                                     class="w-full h-full object-cover"
                                 />
